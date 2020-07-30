@@ -2,33 +2,23 @@ let ws;
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        console.log(request)
-        //サーバー接続/切断要求
-        if (request.value.type === 10) {
 
-            //多重にコネクション張っちゃうのを防ぐ目的でwsの中身があった場合にCloseする
+        //サーバーの接続状態の確認要求。
+        //popupから来る
+        if (request.toString() === "GetServerStatusRequest") {
             if (ws !== undefined && (ws.OPENED || ws.OPEN)) {
-                ws.close()
-                //サーバー切断完了通知
-                sendResponse({
-                    value: {
-                        "type": 26,
-                    }
-                });
-                return true
+                sendResponse(true)
             } else {
-                let result = openSocket()
-                console.log(result)
-                if (result === true) {
-                    //サーバー接続完了通知
-                    sendResponse({
-                            value: {
-                                "type": 25,
-                            }
-                        }
-                    );
-                    return true
-                } else {
+                sendResponse(false)
+            }
+        }
+        if (request.value !== undefined) {
+            //サーバー接続/切断要求
+            if (request.value.type === 10) {
+
+                //多重にコネクション張っちゃうのを防ぐ目的でwsの中身があった場合にCloseする
+                if (ws !== undefined && (ws.OPENED || ws.OPEN)) {
+                    ws.close()
                     //サーバー切断完了通知
                     sendResponse({
                         value: {
@@ -36,16 +26,36 @@ chrome.runtime.onMessage.addListener(
                         }
                     });
                     return true
+                } else {
+                    let result = openSocket()
+                    if (result === true) {
+                        //サーバー接続完了通知
+                        sendResponse({
+                                value: {
+                                    "type": 25,
+                                }
+                            }
+                        );
+                        return true
+                    } else {
+                        //サーバー切断完了通知
+                        sendResponse({
+                            value: {
+                                "type": 26,
+                            }
+                        });
+                        return true
+                    }
                 }
-            }
-            //メッセージ
-        } else if (request.value.type === 50) {
+                //メッセージ
+            } else if (request.value.type === 50) {
 
-            let sendObject = request.value
-            //Object.assign(messageObjectBase, request.value)
-            let jsonText = JSON.stringify(sendObject)
-            sendMessage(jsonText)
-            return true
+                let sendObject = request.value
+                //Object.assign(messageObjectBase, request.value)
+                let jsonText = JSON.stringify(sendObject)
+                sendMessage(jsonText)
+                return true
+            }
         }
     });
 

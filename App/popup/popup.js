@@ -1,13 +1,52 @@
 let connectChatButton = document.getElementById('connectChat');
 let connectServerButton = document.getElementById('connectServer');
 
+//backgroundからサーバーの接続状態を確認しにいく
+chrome.runtime.sendMessage(
+    "GetServerStatusRequest",
+    function (response) {
+        if (response === undefined) {
+            connectServerButton.innerText = "サーバーに接続"
+        } else if (response === false) {
+            connectServerButton.innerText = "サーバーに接続"
+        } else if (response === true) {
+            connectServerButton.innerText = "サーバーから切断"
+        }
+    });
+
+chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id,
+        "GetChatStatusRequest",
+        function (response) {
+            if (response === undefined) {
+                connectChatButton.innerText = "チャットに接続"
+            } else if (response === false) {
+                connectChatButton.innerText = "チャットに接続"
+            } else if (response === true) {
+                connectChatButton.innerText = "チャットから切断"
+            }
+        });
+});
 
 // 現在アクティブなタブにデータを送信
 function sendConnectChatMessage() {
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id,
-            "ChatSearchRequest");
+        chrome.tabs.sendMessage(tabs[0].id, {
+                value: {
+                    "type": 5,
+                }
+            },
+            function (response) {
+                if (response === undefined) {
+                    return
+                } else if (response.value.type === 6) {
+                    connectChatButton.innerText = "チャットに接続"
+                } else if (response.value.type === 7) {
+                    connectChatButton.innerText = "チャットから切断"
+                }
+            });
     });
+
 }
 
 

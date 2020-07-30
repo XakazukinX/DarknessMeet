@@ -57,17 +57,43 @@ const option = {
 };
 
 chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.toString() === "ChatSearchRequest") {
-        monitored = document.getElementsByClassName('z38b6 CnDs7d hPqowe');
-        if (monitored.length === 0) {
-            console.log("Darkness Meet : チャットが見つかりませんでした。GoogleMeetのチャットを開いた状態で再度接続ボタンを押してください。")
-            return
-        } else {
-            //推されたら監視をいったん停止する。
-            observer.disconnect();
-            StartMonitor();
+    if (request.value !== undefined) {
+        if (request.value.type === 5) {
+            monitored = document.getElementsByClassName('z38b6 CnDs7d hPqowe');
+            if (monitored.length === 0) {
+                console.log("Darkness Meet : チャットが見つかりませんでした。GoogleMeetのチャットを開いた状態で再度接続ボタンを押してください。")
+                sendResponse({
+                        value: {
+                            "type": 6,
+                        }
+                    }
+                );
+                return true
+            } else {
+                //見つかったら監視をいったん停止する。
+                observer.disconnect();
+                StartMonitor();
+                sendResponse({
+                        value: {
+                            "type": 7,
+                        }
+                    }
+                );
+                return true
+            }
         }
-
+    } else if (request.toString() === "GetChatStatusRequest") {
+        if (monitored !== undefined) {
+            if (monitored.length !== undefined) {
+                if (monitored.length === 0) {
+                    sendResponse(false)
+                } else {
+                    sendResponse(true)
+                }
+            }
+        } else {
+            sendResponse(false)
+        }
     }
 });
 
