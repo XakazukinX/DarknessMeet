@@ -22,7 +22,7 @@ func main() {
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", meetChatServer.HandleConnections)
 
-	log.Printf("Init Darkness GoogleMeet Websocket server !")
+	log.Printf("Init Darkness GMC Get server !")
 
 	if err := http.ListenAndServe(":9999", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
