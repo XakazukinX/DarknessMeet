@@ -1,6 +1,7 @@
 //監視対象のClass
 //20200729現在'z38b6 CnDs7d hPqowe'がGoogleMeetのチャット
-const monitored = document.getElementsByClassName('z38b6 CnDs7d hPqowe'); // 監視対象のノードを取得
+//const rootNode = 'z38b6 CnDs7d hPqowe';
+let monitored;//= document.getElementsByClassName('z38b6 CnDs7d hPqowe'); // 監視対象のノードを取得
 
 //監視対象ノードに変更があったときの処理
 const observer = new MutationObserver(function (mutations) { // オブザーバインスタンスを作成
@@ -13,7 +14,15 @@ const observer = new MutationObserver(function (mutations) { // オブザーバ�
             //時間の変更・チャットユーザーのアップデートが存在していないとき
             if (node.matches('[class="oIy2qc"][jsname*="dTKtvb"]')) {
                 let chat = node.innerText
-                console.log("A Get Chat! " + chat);
+                // 送信側 contents -> background
+                chrome.runtime.sendMessage(
+                    {
+                        value: {
+                            "type": 50,
+                            contents: chat
+                        }
+                    }
+                );
             }
             //時間の変更・チャットユーザーのアップデートが存在しているとき
             else if (node.matches('[class="GDhqjd"][jsname*="Ypafjf"]')) {
@@ -24,7 +33,15 @@ const observer = new MutationObserver(function (mutations) { // オブザーバ�
                     for (let k = 0; k < child.childNodes.length; k++) {
                         let Grandchild = child.childNodes[k]
                         if (Grandchild.matches('[class="oIy2qc"][jsname*="dTKtvb"]')) {
-                            console.log("B Get Chat! " + Grandchild.innerText);
+                            let chat = Grandchild.innerText
+                            chrome.runtime.sendMessage(
+                                {
+                                    value: {
+                                        "type": 50,
+                                        contents: chat
+                                    }
+                                }
+                            );
                         }
                     }
                 }
@@ -40,25 +57,23 @@ const option = {
 };
 
 chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log(request)
-    if (request.toString() === "Action") {
-        //推されたら監視をいったん停止する。
-        observer.disconnect();
-        StartMonitor();
+    if (request.toString() === "ChatSearchRequest") {
+        monitored = document.getElementsByClassName('z38b6 CnDs7d hPqowe');
+        if (monitored.length === 0) {
+            console.log("Darkness Meet : チャットが見つかりませんでした。GoogleMeetのチャットを開いた状態で再度接続ボタンを押してください。")
+            return
+        } else {
+            //推されたら監視をいったん停止する。
+            observer.disconnect();
+            StartMonitor();
+        }
+
     }
 });
 
 function StartMonitor() {
-    /*    $("*").each(function (index) {
-            let id = $(this).attr("jsname")
-            if (id == "KYYiw") {
-                console.log(id)
-                console.log("!!!")
-            }
-        });*/
-
     //監視対象ノードが1件でもあれば監視を開始する。
-    if (monitored.length != 0) {
+    if (monitored.length !== 0) {
         observer.observe(monitored[0], option);
     }
 }

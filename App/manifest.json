@@ -4,7 +4,7 @@
   "name": "SimpleExtension",
   "version": "1.0",
   "icons": {
-    "48": "SimpleExtension48.png"
+    "48": "src/chatget_off.png"
   },
   "content_scripts": [
     {
@@ -13,22 +13,34 @@
       ],
       "js": [
         "jquery-3.5.1.min.js",
-        "test.js"
+        "contents/contents.js"
       ]
     }
   ],
   "background": {
     "scripts": [
-      "background.js"
+      "background/background.js"
+    ],
+    "persistent": false,
+    "permissions": [
+      "tabs",
+      "background",
+      "http://localhost:9999/*",
+      "ws://127.0.0.1:9999/ws"
     ]
   },
   "browser_action": {
-    "default_title": "グレースケールLOVE！"
+    "default_title": "グレースケールLOVE！",
+    "default_popup": "popup/popup.html"
   },
   "permissions": [
     "tabs",
     "background",
-    "http://*/*",
-    "https://*/*"
-  ]
+    "http://localhost:9999/*",
+    "ws://127.0.0.1:9999/ws"
+  ],
+  "web_accessible_resources": [
+    "main.wasm"
+  ],
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
 }

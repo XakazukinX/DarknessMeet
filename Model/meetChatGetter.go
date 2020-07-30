@@ -1,19 +1,34 @@
 package Model
 
+/*
+import (
+	"log"
+	"syscall/js"
+)
+
 type meetChatGetter struct {
-	fetchTime uint
+	meetChatServer *meetChatServer
 }
 
-func NewMeetChatGetter(fetchTime uint) *meetChatGetter {
+func NewMeetChatGetter(server *meetChatServer) *meetChatGetter {
 	return &meetChatGetter{
-		fetchTime: fetchTime,
+		meetChatServer: server,
 	}
 }
 
-/*func (m meetChatGetter) Init(){
+func (m meetChatGetter) SetGoogleMeetChat(value js.Value, args []js.Value) interface{} {
+	//argsに詰まってなかったら無視
+	if len(args) == 0 {
+		return nil
+	}
+	if js.ValueOf(args[0]).IsUndefined() {
+		return nil
+	}
 
-
-}*/
-
-func getGoogleMeetChat() {
+	jsonText := js.ValueOf(args[0]).String()
+	jsonData := []byte (jsonText)
+	m.meetChatServer.BroadcastChan <- jsonData
+	log.Printf("In Golang Get From Chrome %v", jsonText)
+	return nil
 }
+*/
