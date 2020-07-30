@@ -1,7 +1,7 @@
 {
-  "description": "最も簡単な拡張機能",
+  "name": "DarknessGoogleMeetChatGetter",
+  "description": "GoogleMeetのチャットを取得しWebsocketで流します。ポート9999を使用します。",
   "manifest_version": 2,
-  "name": "SimpleExtension",
   "version": "1.0",
   "icons": {
     "48": "src/chatget_off.png"
@@ -30,7 +30,7 @@
     ]
   },
   "browser_action": {
-    "default_title": "グレースケールLOVE！",
+    "default_title": "DarknessGoogleMeetChatGetter！",
     "default_popup": "popup/popup.html"
   },
   "permissions": [
@@ -38,9 +38,6 @@
     "background",
     "http://localhost:9999/*",
     "ws://127.0.0.1:9999/ws"
-  ],
-  "web_accessible_resources": [
-    "main.wasm"
   ],
   "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
 }
