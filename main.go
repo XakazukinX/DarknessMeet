@@ -2,13 +2,19 @@ package main
 
 import (
 	"DarknessMeet/Model"
+	"flag"
 	"log"
 	"net/http"
 )
 
+var logMode = flag.String("logMode", "text", "set server logging mode")
+
 func main() {
-	log.Printf("Hello Go wasm")
-	meetChatServer := Model.NewMeetChatServer()
+	flag.Parse()
+
+	f := Model.NewFlagDefine(*logMode)
+
+	meetChatServer := Model.NewMeetChatServer(f)
 	meetChatServer.Init()
 
 	// ファイルサーバーを立ち上げる
@@ -16,7 +22,7 @@ func main() {
 	http.Handle("/", fs)
 	http.HandleFunc("/ws", meetChatServer.HandleConnections)
 
-	log.Printf("Init websocket server !")
+	log.Printf("Init Darkness GoogleMeet Websocket server !")
 
 	if err := http.ListenAndServe(":9999", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)

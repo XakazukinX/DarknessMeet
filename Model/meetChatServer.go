@@ -1,18 +1,22 @@
 package Model
 
 import (
+	"DarknessMeet/Model/LoggingMode"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strings"
+	"unsafe"
 )
 
 type meetChatServer struct {
 	Clients       map[*websocket.Conn]bool
 	BroadcastChan chan []byte
 	Upgrader      websocket.Upgrader
+	FlagDefine    *flagDefine
 }
 
-func NewMeetChatServer() *meetChatServer {
+func NewMeetChatServer(f *flagDefine) *meetChatServer {
 	return &meetChatServer{
 		Clients:       make(map[*websocket.Conn]bool),
 		BroadcastChan: make(chan []byte),
@@ -24,6 +28,7 @@ func NewMeetChatServer() *meetChatServer {
 				return true
 			},
 		},
+		FlagDefine: f,
 	}
 }
 
@@ -68,7 +73,7 @@ func (m meetChatServer) handleMessages() {
 	for {
 		// ブロードキャストチャンネルにデータが流れてくるので、それをそのまま全Clientに垂れ流し
 		data := <-m.BroadcastChan
-		log.Printf("Start Broadcast %v", data)
+		m.loggingPacket("StartBroadcast", data)
 		// 現在接続しているクライアント全てにメッセージを送信する
 		for client := range m.Clients {
 			err := client.WriteMessage(websocket.BinaryMessage, data)
@@ -81,5 +86,17 @@ func (m meetChatServer) handleMessages() {
 				delete(m.Clients, client)
 			}
 		}
+	}
+}
+
+func (m meetChatServer) loggingPacket(logMsg string, data []byte) {
+
+	if strings.EqualFold(LoggingMode.Text, m.FlagDefine.loggingMode) {
+		dataText := *(*string)(unsafe.Pointer(&data))
+		log.Printf("%v : %v", logMsg, dataText)
+	} else if strings.EqualFold(LoggingMode.Binary, m.FlagDefine.loggingMode) {
+		log.Printf("%v : %v", logMsg, data)
+	} else {
+		//Noneまたはその他の文字列が入っていた場合は出力しない
 	}
 }
