@@ -1,0 +1,2 @@
+DarknessGMCGetServer.exe
+pause
