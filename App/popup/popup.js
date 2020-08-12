@@ -60,6 +60,7 @@ function sendConnectServerMessage() {
         //レスポンスによってボタンの内容変更
         function (response) {
             if (response === undefined) {
+                connectServerButton.innerText = "サーバーに接続"
                 return
             }
             if (response.value.type === 25) {
@@ -68,7 +69,10 @@ function sendConnectServerMessage() {
             } else if (response.value.type === 26) {
                 //サーバー切断後の処理
                 connectServerButton.innerText = "サーバーに接続"
+            } else {
+                connectServerButton.innerText = "サーバーに接続"
             }
+
         });
 }
 

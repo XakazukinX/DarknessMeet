@@ -38,7 +38,6 @@ func (m meetChatServer) Init() {
 
 func (m meetChatServer) HandleConnections(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Connected")
-	// 送られてきたGETリクエストをwebsocketにアップグレード
 	ws, err := m.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -69,12 +68,11 @@ func (m meetChatServer) HandleConnections(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (m meetChatServer) handleMessages() {
+func (m *meetChatServer) handleMessages() {
 	for {
 		// ブロードキャストチャンネルにデータが流れてくるので、それをそのまま全Clientに垂れ流し
 		data := <-m.BroadcastChan
 		m.loggingPacket("StartBroadcast", data)
-		// 現在接続しているクライアント全てにメッセージを送信する
 		for client := range m.Clients {
 			err := client.WriteMessage(websocket.BinaryMessage, data)
 			if err != nil {

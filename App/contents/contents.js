@@ -2,7 +2,7 @@
 //20200729現在'z38b6 CnDs7d hPqowe'がGoogleMeetのチャット
 //const rootNode = 'z38b6 CnDs7d hPqowe';
 let monitored;//= document.getElementsByClassName('z38b6 CnDs7d hPqowe'); // 監視対象のノードを取得
-
+let isChatGet;
 //監視対象ノードに変更があったときの処理
 const observer = new MutationObserver(function (mutations) { // オブザーバインスタンスを作成
     mutations.forEach(function (mutation) {
@@ -68,6 +68,7 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
                         }
                     }
                 );
+                isChatGet = false
                 return true
             } else {
                 //見つかったら監視をいったん停止する。
@@ -79,17 +80,14 @@ chrome.extension.onMessage.addListener(function (request, sender, sendResponse) 
                         }
                     }
                 );
+                isChatGet = true
                 return true
             }
         }
     } else if (request.toString() === "GetChatStatusRequest") {
         if (monitored !== undefined) {
             if (monitored.length !== undefined) {
-                if (monitored.length === 0) {
-                    sendResponse(false)
-                } else {
-                    sendResponse(true)
-                }
+                sendResponse(isChatGet)
             }
         } else {
             sendResponse(false)
