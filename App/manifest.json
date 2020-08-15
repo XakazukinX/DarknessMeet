@@ -2,7 +2,7 @@
   "name": "DarknessGoogleMeetChatGetter",
   "description": "GoogleMeetのチャットを取得しWebsocketで流します。9999ポートを使用します。",
   "manifest_version": 2,
-  "version": "0.1",
+  "version": "1.0.0",
   "icons": {
     "48": "src/chatget_off.png"
   },
